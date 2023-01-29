@@ -1,3 +1,3 @@
-USERS = None
-URLS = None
 DOWNLOAD_FOLDER = None
+URLS = None
+USERS = None

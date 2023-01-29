@@ -11,24 +11,23 @@ import core.context as ctx
 default_timeout = 60
 
 
-@allure.step("Добавляем новую папку")
 def add_new_directory(name_directory):
-    path = os.path.join(tempfile.gettempdir(), name_directory)
-    if not os.path.exists(path):
-        os.mkdir(path)
-    print(f"*****************************{path = }")
-    return path
+    with allure.step('Добавляем новую папку'):
+        path = os.path.join(tempfile.gettempdir(), name_directory)
+        if not os.path.exists(path):
+            os.mkdir(path)
+        print(f'*****************************{path = }')
+        return path
 
 
-@allure.step("Получаем наличие файла в директории")
 def check_file_in_dir_present(file_name, timeout=10):
-    count = 1
+    with allure.step('Получаем наличие файла в директории'):
+        count = 1
     end_time = time.time() + timeout
     name_directory = ctx.DOWNLOAD_FOLDER
     path = os.path.join(tempfile.gettempdir(), name_directory)
-
     while True:
-        with allure.step(f"Ждем 1 секунду. Проверяем наличие файла в директории, попытка {count}"):
+        with allure.step(f'Ждем 1 секунду. Проверяем наличие файла в директории, попытка {count}'):
             if file_name in os.listdir(path):
                 return True
             if time.time() > end_time:
@@ -38,9 +37,9 @@ def check_file_in_dir_present(file_name, timeout=10):
                 time.sleep(1)
 
 
-@allure.step("Проверяем, что началась загрузка файла")
 def check_file_start_to_download():
-    path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
+    with allure.step('Проверяем, что началась загрузка файла'):
+        path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
     end_time = time.time() + 5
     while True:
         if len(os.listdir(path)):
@@ -48,53 +47,53 @@ def check_file_start_to_download():
         time.sleep(1)
         if time.time() > end_time:
             break
-    raise Exception("Не началась загрузка файла")
+    raise Exception('Не началась загрузка файла')
 
 
-@allure.step("Удаляем папку")
 def delete_directory(path_directory):
-    print(f"/////////////////{delete_directory} : {path_directory}")
-    os.rmdir(path_directory)
+    with allure.step('Удаляем папку'):
+        print(f'/////////////////{delete_directory} : {path_directory}')
+        os.rmdir(path_directory)
 
 
-@allure.step("Удаляем файл")
 def delete_file(file_path):
-    os.unlink(file_path)
+    with allure.step('Удаляем файл'):
+        os.unlink(file_path)
 
 
-@allure.step("Удаляем содержимое папки")
 def delete_files_of_directory():
-    path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
-    for filename in os.listdir(path):
-        file_path = os.path.join(path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print("Ошибка удаления %s. Причина: %s" % (file_path, e))
+    with allure.step('Удаляем содержимое папки'):
+        path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
+        for filename in os.listdir(path):
+            file_path = os.path.join(path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Ошибка удаления {file_path}. Причина: {e}')
 
 
-@allure.step("Получаем количество файлов в папке")
 def get_amount_files_of_directory():
-    path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
-    return len(os.listdir(path))
+    with allure.step('Получаем количество файлов в папке'):
+        path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
+        return len(os.listdir(path))
 
 
-@allure.step("Получаем размер файла")
 def get_size_file(file_name):
-    return os.path.getsize(os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER, file_name))
+    with allure.step('Получаем размер файла'):
+        return os.path.getsize(os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER, file_name))
 
 
-@allure.step("Ожидаем загрузки файла")
 def wait_until_file_downloading():
-    end_time = time.time() + default_timeout
-    path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
-    while True:
-        if not glob.glob(path + "\\*.crdownload"):
-            return False
-        time.sleep(2)
-        if time.time() > end_time:
-            break
-    raise Exception("Не загрузился файл")
+    with allure.step('Ожидаем загрузки файла'):
+        end_time = time.time() + default_timeout
+        path = os.path.join(tempfile.gettempdir(), ctx.DOWNLOAD_FOLDER)
+        while True:
+            if not glob.glob(path + '\\*.crdownload'):
+                return False
+            time.sleep(2)
+            if time.time() > end_time:
+                break
+        raise Exception('Не загрузился файл')
